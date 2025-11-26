@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Thyroid Disease Prediction - New Interface</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 4px;
+        }
+        .positive {
+            background-color: #f8d7da;
+            border-left: 5px solid #dc3545;
+        }
+        .negative {
+            background-color: #d4edda;
+            border-left: 5px solid #28a745;
+        }
+        .advice-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .advice-positive {
+            background-color: #f5c6cb;
+            color: #721c24;
+        }
+        .advice-negative {
+            background-color: #c3e6cb;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Thyroid Disease Prediction - New Interface</h1>
+        <form method="POST" action="/new_predict">
+            <!-- Example form fields -->
+            <div class="form-group">
+                <label for="age">Age</label>
+                <input type="number" id="age" name="age" required />
+            </div>
+            <div class="form-group">
+                <label for="sex">Sex</label>
+                <select id="sex" name="sex" required>
+                    <option value="">Select</option>
+                    <option value="F">Female</option>
+                    <option value="M">Male</option>
+                </select>
+            </div>
+            <!-- Add the rest of your form fields here (unchanged) -->
+
+            <button type="submit">Predict Thyroid Disease</button>
+        </form>
+
+        {% if prediction %}
+        <div class="result {% if prediction == 'P' %}positive{% else %}negative{% endif %}">
+            <h2>Prediction Result</h2>
+            <p><strong>
+                {% if prediction == 'P' %}
+                    Thyroid Disease Detected
+                {% else %}
+                    No Thyroid Disease Detected
+                {% endif %}
+            </strong></p>
+
+            <h3>Prediction Probabilities:</h3>
+            <ul>
+                {% for label, prob in probabilities.items() %}
+                    <li>{{ label }}: {{ (prob * 100) | round(2) }}%</li>
+                {% endfor %}
+            </ul>
+
+            <div class="advice-box {% if prediction == 'P' %}advice-positive{% else %}advice-negative{% endif %}">
+                <h3>Medical Advice:</h3>
+                <p>{{ advice }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

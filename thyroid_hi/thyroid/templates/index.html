@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thyroid Disease Prediction</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    form {
+      max-width: 1000px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .form-row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .form-col {
+      flex: 1;
+      min-width: 300px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 12px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    #result {
+      max-width: 1000px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .probability-bar {
+      margin: 10px 0;
+    }
+
+    .bar {
+      height: 20px;
+      border-radius: 5px;
+      background: #ccc;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      text-align: center;
+      color: white;
+      font-size: 12px;
+      line-height: 20px;
+    }
+
+    .positive { background: #dc3545; }  /* Red */
+    .negative { background: #28a745; }  /* Green */
+
+    .advice-box {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+
+    .advice-positive {
+      background: #ffeeba;
+      border-left: 5px solid #ff8800;
+      color: #856404;
+    }
+
+    .advice-negative {
+      background: #cce5ff;
+      border-left: 5px solid #004085;
+      color: #004085;
+    }
+
+    @media (max-width: 768px) {
+      .form-row {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<h1>Thyroid Disease Prediction</h1>
+
+<form id="predictionForm">
+  <div class="form-row">
+    <!-- Left Column -->
+    <div class="form-col">
+      <label for="age">Age</label>
+      <input type="number" id="age" name="age" required>
+
+      <label for="sex">Sex</label>
+      <select id="sex" name="sex" required>
+        <option value="">Select</option>
+        <option value="F">Female</option>
+        <option value="M">Male</option>
+      </select>
+
+      <label for="on_thyroxine">On Thyroxine</label>
+      <select id="on_thyroxine" name="on_thyroxine">
+        <option value="f">No</option>
+        <option value="t">Yes</option>
+      </select>
+
+      <label for="query_on_thyroxine">Query On Thyroxine</label>
+      <select id="query_on_thyroxine" name="query_on_thyroxine">
+        <option value="f">No</option>
+        <option value="t">Yes</option>
+      </select>
+
+      <label for="on_antithyroid_medication">On Antithyroid Medication</label>
+      <select id="on_antithyroid_medication" name="on_antithyroid_medication">
+        <option value="f">No</option>
+        <option value="t">Yes</option>
+      </select>
+
+      <label for="sick">Sick</label>
+      <select id="sick" name="sick">
+        <option value="f">No</option>
+        <option value="t">Yes</option>
+      </select>
+
+      <label for="pregnant">Pregnant</label>
+      <select id="pregnant" name="pregnant">
+        <option value="f">No</option>
+        <option value="t">Yes</option>
+      </select>
+
+      <label for="TSH">TSH</label>
+      <input type="number" id="TSH" name="TSH" step="any" required>
+
+      <label for="T3">T3</label>
+      <input type="number" id="T3" name="T3" step="any" required>
+
+      <label for="TT4">TT4</label>
+      <input type="number" id="TT4" name="TT4" step="any" required>
+
+      <label for="T4U">T4U</label>
+      <input type="number" id="T4U" name="T4U" step="any">
+
+      <label for="FTI">FTI</label>
+      <input type="number" id="FTI" name="FTI" step="any">
+
+      <label for="TBG">TBG</label>
+      <input type="number" id="TBG" name="TBG" step="any">
+
+      <label for="thyroid_surgery">Thyroid Surgery</label>
+      <select id="thyroid_surgery" name="thyroid_surgery">
+        <option value="f">No</option>
+        <option value="t">Yes</option>
+      </select>
+
+      <label for="I131_treatment">I131 Treatment</label>
+      <select id="I131_treatment" name="I131_treatment">
+        <option value="f">No</option>
+        <option value="t">Yes</option>
+      </select>
+    </div>
+
+    <!-- Right Column -->
+    <div class="form-col">
+      <label for="query_hypothyroid">Query Hypothyroid</label>
+      <select id="query_hypothyroid" name="query_hypothyroid">
+        <option value="f">No</option>
+        <option value="t">Yes</option>
+      </select>
+
+      <label for="query_hyperthyroid">Query Hyperthyroid</label>
+      <select id="query_hyperthyroid" name="query_hyperthyroid">
+        <option value="f">No</option>
+        <option value="t">Yes</option>
+      </select>
+
+      <label for="lithium">Lithium</label>
+      <select id="lithium" name="lithium">
+        <option value="f">No</option>
+        <option value="t">Yes</option>
+      </select>
+
+      <label for="goitre">Goitre</label>
+      <select id="goitre" name="goitre">
+        <option value="f">No</option>
+        <option value="t">Yes</option>
+      </select>
+
+      <label for="tumor">Tumor</label>
+      <select id="tumor" name="tumor">
+        <option value="f">No</option>
+        <option value="t">Yes</option>
+      </select>
+
+      <label for="hypopituitary">Hypopituitary</label>
+      <select id="hypopituitary" name="hypopituitary">
+        <option value="f">No</option>
+        <option value="t">Yes</option>
+      </select>
+
+      <label for="psych">Psych</label>
+      <select id="psych" name="psych">
+        <option value="f">No</option>
+        <option value="t">Yes</option>
+      </select>
+
+      <label for="TSH_measured">TSH Measured</label>
+      <select id="TSH_measured" name="TSH_measured">
+        <option value="f">No</option>
+        <option value="t">Yes</option>
+      </select>
+
+      <label for="T3_measured">T3 Measured</label>
+      <select id="T3_measured" name="T3_measured">
+        <option value="f">No</option>
+        <option value="t">Yes</option>
+      </select>
+
+      <label for="TT4_measured">TT4 Measured</label>
+      <select id="TT4_measured" name="TT4_measured">
+        <option value="f">No</option>
+        <option value="t">Yes</option>
+      </select>
+
+      <label for="T4U_measured">T4U Measured</label>
+      <select id="T4U_measured" name="T4U_measured">
+        <option value="f">No</option>
+        <option value="t">Yes</option>
+      </select>
+
+      <label for="FTI_measured">FTI Measured</label>
+      <select id="FTI_measured" name="FTI_measured">
+        <option value="f">No</option>
+        <option value="t">Yes</option>
+      </select>
+
+      <label for="TBG_measured">TBG Measured</label>
+      <select id="TBG_measured" name="TBG_measured">
+        <option value="f">No</option>
+        <option value="t">Yes</option>
+      </select>
+
+      <label for="referral_source">Referral Source</label>
+      <select id="referral_source" name="referral_source">
+        <option value="SVHC">SVHC</option>
+        <option value="SVI">SVI</option>
+        <option value="STMW">STMW</option>
+        <option value="SVHD">SVHD</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+  </div>
+
+  <button type="submit">Predict</button>
+</form>
+
+<div id="result" style="display:none;">
+  <h2>Prediction Result:</h2>
+  <p id="predictionText"></p>
+  <div id="probabilities"></div>
+  <div id="adviceBox"></div>
+</div>
+
+<script>
+document.getElementById("predictionForm").addEventListener("submit", async function(e){
+  e.preventDefault();
+  const formData = new FormData(this);
+
+  const response = await fetch("/predict", { method: "POST", body: formData });
+  const data = await response.json();
+
+  const resultDiv = document.getElementById("result");
+  const predictionText = document.getElementById("predictionText");
+  const probabilitiesDiv = document.getElementById("probabilities");
+  const adviceBox = document.getElementById("adviceBox");
+
+  if (data.error) {
+    predictionText.innerText = "Error: " + data.error;
+  } else {
+    predictionText.innerText = "Prediction: " + data.prediction;
+
+    probabilitiesDiv.innerHTML = "";
+    for (const [label, prob] of Object.entries(data.probabilities)) {
+      const percent = (prob * 100).toFixed(2) + "%";
+      const barClass = label === "P" ? "positive" : "negative";
+      probabilitiesDiv.innerHTML += `
+        <div class="probability-bar">
+          <strong>${label}:</strong> ${percent}
+          <div class="bar">
+            <div class="bar-fill ${barClass}" style="width:${prob*100}%;">${percent}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Display advice
+    if (adviceBox) {
+      let adviceClass = data.prediction === "P" ? "advice-positive" : "advice-negative";
+      let adviceContent = data.prediction === "P" ? `
+        <p>${data.advice}</p>
+        <ul>
+          <li>Consult an endocrinologist for a full evaluation.</li>
+          <li>Get blood tests: TSH, T3, T4, and thyroid antibodies if needed.</li>
+          <li>Consider thyroid imaging (ultrasound or scintigraphy) if recommended.</li>
+          <li>Maintain a balanced diet, exercise regularly, and avoid stress.</li>
+          <li>Follow up regularly for monitoring thyroid levels.</li>
+        </ul>
+      ` : `<p>Congratulations! You do not have any thyroid-related illness detected.</p>`;
+
+      adviceBox.innerHTML = `<div class="advice-box ${adviceClass}">
+        <h3>Medical Advice:</h3>
+        ${adviceContent}
+      </div>`;
+    }
+  }
+
+  resultDiv.style.display = "block";
+});
+</script>
+
+</body>
+</html>
